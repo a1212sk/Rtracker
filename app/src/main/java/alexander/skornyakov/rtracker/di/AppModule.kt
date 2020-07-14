@@ -21,4 +21,8 @@ object AppModule {
         Room.databaseBuilder(context, RunningDatabase::class.java, DATABASE_NAME)
             .build()
 
+    @Singleton
+    @Provides
+    fun provideRunDao(db: RunningDatabase) = db.getRunDao()
+
 }
