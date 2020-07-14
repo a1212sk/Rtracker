@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 when(destination.id){
                     R.id.settingsFragment, R.id.statisticsFragment, R.id.runFragment ->
                         bottomNavigationView.visibility = View.VISIBLE
-                    else -> bottomNavigationView.visibility = View.VISIBLE
+                    else -> bottomNavigationView.visibility = View.GONE
                 }
             }
     }
