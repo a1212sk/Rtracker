@@ -1,5 +1,6 @@
-package alexander.skornyakov.rtracker
+package alexander.skornyakov.rtracker.ui
 
+import alexander.skornyakov.rtracker.R
 import alexander.skornyakov.rtracker.db.RunDao
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
