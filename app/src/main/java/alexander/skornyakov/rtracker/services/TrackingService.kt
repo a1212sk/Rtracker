@@ -65,6 +65,10 @@ class TrackingService : LifecycleService() {
         pathPoints.postValue(mutableListOf())
     }
 
+    private fun pauseService() {
+        isTracking.postValue(false)
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             when (it.action) {
@@ -72,10 +76,13 @@ class TrackingService : LifecycleService() {
                     if (isFirstRun) {
                         startForegroundService()
                         isFirstRun = false
+                    } else {
+                        startForegroundService()
                     }
                     Timber.d("Started or resumed service")
                 }
                 ACTION_PAUSE_SERVICE -> {
+                    pauseService()
                     Timber.d("Paused service")
                 }
                 ACTION_STOP_SERVICE -> {
@@ -134,6 +141,7 @@ class TrackingService : LifecycleService() {
             }
         }
     }
+
 
     private fun getMainActivityPendingIntent() =
         PendingIntent.getActivity(
