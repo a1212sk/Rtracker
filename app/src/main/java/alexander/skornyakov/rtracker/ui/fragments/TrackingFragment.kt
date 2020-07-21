@@ -7,6 +7,7 @@ import alexander.skornyakov.rtracker.helpers.Constants.ACTION_START_OR_RESUME_SE
 import alexander.skornyakov.rtracker.helpers.Constants.MAP_ZOOM
 import alexander.skornyakov.rtracker.helpers.Constants.POLYLINE_COLOR
 import alexander.skornyakov.rtracker.helpers.Constants.POLYLINE_WIDTH
+import alexander.skornyakov.rtracker.helpers.TrackingUtility
 import alexander.skornyakov.rtracker.services.Polyline
 import alexander.skornyakov.rtracker.services.Polylines
 import alexander.skornyakov.rtracker.services.TrackingService
@@ -33,6 +34,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking){
 
     private var map: GoogleMap? = null
 
+    private var currentTimeInMillis = 0L
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapView.onCreate(savedInstanceState)
@@ -54,6 +57,11 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking){
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
+        })
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+            currentTimeInMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(currentTimeInMillis, true)
+            tvTimer.text = formattedTime
         })
     }
 
