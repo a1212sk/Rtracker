@@ -51,6 +51,8 @@ class TrackingService : LifecycleService() {
 
     var isFirstRun = true
 
+    var isServiceKilled = false
+
     @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -135,6 +137,7 @@ class TrackingService : LifecycleService() {
                 }
                 ACTION_STOP_SERVICE -> {
                     Timber.d("Stopped service")
+                    killService()
                 }
             }
         }
@@ -203,15 +206,17 @@ class TrackingService : LifecycleService() {
         startForeground(NOTIFICATION_ID, baseNotificationBuilder.build())
 
         timeRunInSecondes.observe(this, Observer {
-            val notification = curNotificationBuilder
-                .setContentText(
-                    TrackingUtility.getFormattedStopWatchTime(
-                        it * 1000L,
-                        false
+            if(!isServiceKilled) {
+                val notification = curNotificationBuilder
+                    .setContentText(
+                        TrackingUtility.getFormattedStopWatchTime(
+                            it * 1000L,
+                            false
+                        )
                     )
-                )
-                .build()
-            notificationManager.notify(NOTIFICATION_ID, notification)
+                    .build()
+                notificationManager.notify(NOTIFICATION_ID, notification)
+            }
         })
     }
 
@@ -242,11 +247,22 @@ class TrackingService : LifecycleService() {
             isAccessible = true
             set(curNotificationBuilder, ArrayList<NotificationCompat.Action>())
         }
-        curNotificationBuilder = baseNotificationBuilder.addAction(
-            R.drawable.ic_pause_black_24dp,
-            notificationActionText,
-            pendingIntent
-        )
-        notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        if(!isServiceKilled) {
+            curNotificationBuilder = baseNotificationBuilder.addAction(
+                R.drawable.ic_pause_black_24dp,
+                notificationActionText,
+                pendingIntent
+            )
+            notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        }
+    }
+
+    private fun killService(){
+        isServiceKilled = true
+        isFirstRun = true
+        pauseService()
+        postInitialValues()
+        stopForeground(true)
+        stopSelf()
     }
 }
