@@ -3,12 +3,14 @@ package alexander.skornyakov.rtracker.ui.fragments
 import alexander.skornyakov.rtracker.R
 import alexander.skornyakov.rtracker.adapters.RunAdapter
 import alexander.skornyakov.rtracker.helpers.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import alexander.skornyakov.rtracker.helpers.SortType
 import alexander.skornyakov.rtracker.helpers.TrackingUtility
 import alexander.skornyakov.rtracker.ui.viewmodels.MainViewModel
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -30,10 +32,39 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         requestPermissions()
+
+        when(viewModel.sortType){
+            SortType.DATE -> spFilter.setSelection(0)
+            SortType.RUNNING_TIME -> spFilter.setSelection(1)
+            SortType.DISTANCE -> spFilter.setSelection(2)
+            SortType.AVG_SPEED -> spFilter.setSelection(3)
+            SortType.CALORIES_BURNED -> spFilter.setSelection(4)
+        }
+        spFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+               when(position){
+                   0 -> viewModel.sortRuns(SortType.DATE)
+                   1 -> viewModel.sortRuns(SortType.RUNNING_TIME)
+                   2 -> viewModel.sortRuns(SortType.DISTANCE)
+                   3 -> viewModel.sortRuns(SortType.AVG_SPEED)
+                   4 -> viewModel.sortRuns(SortType.CALORIES_BURNED)
+               }
+            }
+
+        }
+
         fab.setOnClickListener {
             findNavController().navigate(R.id.action_runFragment_to_trackingFragment)
         }
-        viewModel.runsSortedByDate.observe(viewLifecycleOwner, Observer {
+        viewModel.runs.observe(viewLifecycleOwner, Observer {
             runAdapter.submitList(it)
         })
     }
