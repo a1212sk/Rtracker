@@ -21,6 +21,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadFieldsFromSharePrefs()
         btnApplyChanges.setOnClickListener {
             val success = applyChangesToSharedPref()
             if (success) {
